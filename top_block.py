@@ -22,7 +22,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import osmosdr
 import time
-
+from datetime import datetime
 
 class top_block(gr.top_block):
 
@@ -51,6 +51,7 @@ class top_block(gr.top_block):
         self.osmosdr_source_0_1.set_sample_rate(samp_rate)
         self.osmosdr_source_0_1.set_center_freq(tuner+freq_offset, 0)
         self.osmosdr_source_0_1.set_freq_corr(21, 0)
+        self.osmosdr_source_0_1.set_gain_mode(False, 0)
         self.osmosdr_source_0_1.set_gain(10, 0)
         self.osmosdr_source_0_1.set_if_gain(24, 0)
         self.osmosdr_source_0_1.set_bb_gain(20, 0)
@@ -58,7 +59,7 @@ class top_block(gr.top_block):
         self.osmosdr_source_0_1.set_bandwidth(0, 0)
         self.freq_xlating_fir_filter_xxx_0_1 = filter.freq_xlating_fir_filter_ccc(1, firdes.low_pass(1, samp_rate,cutoff, width,  firdes.WIN_BLACKMAN, 6.76), -freq_offset, samp_rate)
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, 'capture', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, 'capture_' + datetime.today().strftime('%Y%m%d%H%M%S'), False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.analog_simple_squelch_cc_0 = analog.simple_squelch_cc(squelch, 1)
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf(demodgain)
