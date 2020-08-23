@@ -5,6 +5,7 @@ from bitarray import bitarray
 from crcmod import Crc
 from collections import defaultdict
 from hamm import hamming
+from datetime import datetime
 
 PREAMBLE_N = 8 # minimum preamble repeats of 01
 T1_METER_SYNC = ('01'* 4) + '0000111101'
@@ -49,13 +50,16 @@ def decode():
     idx = 0
     pkt = bitarray()
     #badbits = 0
+    print 'start reading bytes'
     mm = sys.stdin.read(BSIZE)
+    print 'read bytes'
     total = 0
     while(True):
         # buffered find(bit,idx) from stdin
         pos = mm.find(chr(bit), idx - total if idx>total else 0)
         while pos == -1:
             total += len(mm)
+            print '[', datetime.today().strftime('%Y-%m-%d %H:%M:%S'), ']', 'progress: ', total, ', pkts: ', len(pkts), ', bad: ', len(bad)
             mm = sys.stdin.read(BSIZE)
             if not mm:
                 #print sizes
@@ -78,6 +82,9 @@ def decode():
                         pkts.append(msg)
                         pkt = pkt[len(msg[0])*12:]
                         found=True
+                        print '[', datetime.today().strftime('%Y-%m-%d %H:%M:%S'), ']', 'Found: ', msg
+                        alpha,beta = msg
+                        dump(alpha)
                     else:
                         pkt = pkt[140:]
                 if not found:
